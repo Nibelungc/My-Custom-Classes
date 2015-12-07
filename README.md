@@ -32,3 +32,8 @@ func application(application: UIApplication, didFinishLaunchingWithOptions launc
     return true
 }
 ```
+If you want to show it elsewhere after initialization, you can take the saved instance
+``` swift
+guard let helpController = WelcomePageController.welcomeController else { return }
+self.presentViewController(helpController, animated: true, completion: nil)
+```
