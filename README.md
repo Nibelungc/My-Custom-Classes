@@ -37,3 +37,10 @@ If you want to show it elsewhere after initialization, you can take the saved in
 guard let helpController = WelcomePageController.welcomeController else { return }
 self.presentViewController(helpController, animated: true, completion: nil)
 ```
+## UIViewController+EmptyBackButton
+
+`UIViewController+EmptyBackButton` category for the `UIViewController`. Removes back button titles from every view controller. Uses swizzling.
+
+### Usage
+
+Add 'UIViewController+EmptyBackButton.h` and `UIViewController+EmptyBackButton.m` to your project
