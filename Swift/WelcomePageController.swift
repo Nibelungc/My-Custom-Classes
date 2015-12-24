@@ -13,6 +13,7 @@ class WelcomePageController: UIViewController {
     /** Public */
     
     var closeButton: UIButton
+    var finishButton: UIButton
     var pageControl: UIPageControl
     var statusBarHidden = true
     var resetPageOnWillAppear = true
@@ -35,10 +36,11 @@ class WelcomePageController: UIViewController {
     private var initialViewController: UIViewController!
     private let pageController: UIPageViewController
     private let DefaultPadding: CGFloat = 8.0
+    private var tintColor: UIColor?
     
     //  MARK: - Initialization
     
-    convenience init(withImages images: [UIImage]){
+    convenience init(withImages images: [UIImage], tintColor: UIColor? = nil){
         let controllersWithImages: [UIViewController] = images.map() { image in
             let viewController = UIViewController()
             let imageView = UIImageView(frame: viewController.view.bounds)
@@ -48,15 +50,16 @@ class WelcomePageController: UIViewController {
             viewController.view.addSubview(imageView)
             return viewController
         }
-        self.init(viewControllers: controllersWithImages)
+        self.init(viewControllers: controllersWithImages, tintColor: tintColor)
     }
     
-    init(viewControllers controllers: [UIViewController]){
+    init(viewControllers controllers: [UIViewController], tintColor tint: UIColor? = nil){
         viewControllers = controllers.isEmpty ? [WelcomePageController.placeholderViewController()] : controllers
         pageControl = UIPageControl()
-        closeButton = UIButton(type: .Custom)
+        finishButton = UIButton(type: .Custom)
+        closeButton = UIButton(type: .Custom);
         pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: .Horizontal, options: nil)
-        
+        tintColor = tint
         super.init(nibName: nil, bundle: nil)
         self.configureUIElements()
     }
@@ -96,6 +99,11 @@ class WelcomePageController: UIViewController {
     //  MARK: - Setup UI
     
     private func configureUIElements() {
+        var windowTintColor: UIColor? = UIColor.blueColor()
+        if let applicationWindow = UIApplication.sharedApplication().delegate?.window {
+            windowTintColor = applicationWindow?.tintColor
+        }
+        view.tintColor = tintColor ?? windowTintColor
         
         /** PageController setup    */
         let firstControllerInArray = [viewControllers.first!]
@@ -117,22 +125,56 @@ class WelcomePageController: UIViewController {
         view.addSubview(pageControl)
         
         /** Close button setup  */
+        let closeButtonSize = CGSizeMake(44.0, 44.0)
+        closeButton.frame = CGRectMake(CGRectGetMaxX(view.bounds) - closeButtonSize.width, 0, closeButtonSize.width, closeButtonSize.height);
+        closeButton.addTarget(self, action: "dismiss:", forControlEvents: .TouchUpInside)
+        closeButton.setImage(closeButtonImageForFrame(closeButton.bounds), forState: .Normal)
+        view.addSubview(closeButton)
+        
+        /** Finish button setup  */
         let lastViewController = viewControllers.last!
         let padding = DefaultPadding * 3
         let bottomPadding = DefaultPadding * 2
         let buttonSize = CGSizeMake(CGRectGetWidth(view.bounds) - padding * 2, 50)
-        closeButton.frame = CGRectMake(padding, CGRectGetHeight(view.bounds) - buttonSize.height - bottomPadding, buttonSize.width, buttonSize.height)
-        closeButton.addTarget(self, action: "dismiss:", forControlEvents: .TouchUpInside)
-        closeButton.setTitle("Начать пользоваться", forState: .Normal)
-        closeButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        closeButton.titleLabel?.font = UIFont.systemFontOfSize(20.0)
-        closeButton.layer.masksToBounds = true
-        closeButton.layer.cornerRadius = CGRectGetMidY(closeButton.bounds)
-        closeButton.backgroundColor = view.tintColor
-        lastViewController.view.addSubview(closeButton)
+        finishButton.frame = CGRectMake(padding, CGRectGetHeight(view.bounds) - buttonSize.height - bottomPadding, buttonSize.width, buttonSize.height)
+        finishButton.addTarget(self, action: "dismiss:", forControlEvents: .TouchUpInside)
+        finishButton.setTitle("Начать пользоваться", forState: .Normal)
+        finishButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        finishButton.titleLabel?.font = UIFont.systemFontOfSize(20.0)
+        finishButton.layer.masksToBounds = true
+        finishButton.layer.cornerRadius = CGRectGetMidY(finishButton.bounds)
+        finishButton.backgroundColor = view.tintColor
+        lastViewController.view.addSubview(finishButton)
     }
     
     //  MARK: - Helper methods
+    
+    private func closeButtonImageForFrame(frame: CGRect) -> UIImage{
+        let padding = DefaultPadding + 5
+        let imageRect = CGRectInset(frame, padding, padding)
+        
+        UIGraphicsBeginImageContextWithOptions(frame.size, false, 2.0)
+        
+        let context = UIGraphicsGetCurrentContext()!
+        
+        drawLineFromPoint(CGPointMake(padding, padding), toPoint: CGPointMake(CGRectGetMaxX(imageRect), CGRectGetMaxY(imageRect)), withinContext: context)
+        
+        drawLineFromPoint(CGPointMake(CGRectGetMaxX(imageRect), padding), toPoint: CGPointMake(padding, CGRectGetMaxY(imageRect)), withinContext: context)
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+    
+    private func drawLineFromPoint(point: CGPoint, toPoint endPoint: CGPoint, withinContext context: CGContextRef) {
+        CGContextSetLineCap(context, .Round)
+        CGContextSetStrokeColorWithColor(context, view.tintColor.CGColor)
+        CGContextSetLineWidth(context, 3.0)
+        CGContextMoveToPoint(context, point.x, point.y)
+        CGContextAddLineToPoint(context, endPoint.x, endPoint.y)
+        CGContextStrokePath(context)
+    }
     
     private class func placeholderViewController(withText text: String = "You have to add at least one ViewController") -> UIViewController {
         let viewController = UIViewController.init()
@@ -155,10 +197,8 @@ class WelcomePageController: UIViewController {
     
     //  MARK: - Actions
     
-    /*
-      Dismiss if was presented. 
-      If wasn't dismiss view controller after it has been shown at first time.
-      Actually changes root view controller for window.
+    /**
+      Dismiss if was presented. Otherwise sets "initialViewController" as root for window
     */
     @objc private func dismiss(animated: Bool = true){
         if presentingViewController != nil {
