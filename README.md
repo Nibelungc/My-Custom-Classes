@@ -21,11 +21,14 @@ func application(application: UIApplication, didFinishLaunchingWithOptions launc
     let initialViewController = UINavigationController.viewControllerFromStoryboard("InitialNavigationViewController")
     
     /* Initialization */
-    let welcomeViewController = WelcomePageController(withImages: images)
+    let welcomeViewController = WelcomePageController(withImages: images, tintColor: UIColor.TIBrightBlueColor())
     
     /* Optional customization */
-    welcomeViewController.pageControl.currentPageIndicatorTintColor = UIColor.TIBrightBlueColor()
-    welcomeViewController.closeButton.backgroundColor = UIColor.TIBlueColor()
+    let initialViewController = UINavigationController.viewControllerFromStoryboard("InitialNavigationViewController")
+
+    welcomeViewController.finishButton.backgroundColor = UIColor.TIBlueColor()
+    
+    UIApplication.sharedApplication().setRootViewController(initialViewController, withWelcomePageController: welcomeViewController)
     
     /* Setup */
     UIApplication.sharedApplication().setRootViewController(initialViewController, withWelcomePageController: welcomeViewController)
