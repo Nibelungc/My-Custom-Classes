@@ -76,7 +76,7 @@ class WelcomePageController: UIViewController {
         super.viewWillAppear(animated)
         
         if (pageControl.currentPage != 0 && resetPageOnWillAppear){
-            pageController.setViewControllers([viewControllers.first!], direction: .Forward, animated: true, completion: nil)
+            pageController.setViewControllers([viewControllers.first!], direction: .Forward, animated: false, completion: nil)
             pageViewController(pageController, didFinishAnimating: true, previousViewControllers: [], transitionCompleted: true)
         }
         
