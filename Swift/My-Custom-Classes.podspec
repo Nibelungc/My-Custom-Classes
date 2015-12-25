@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 
-  s.name         = "My-Custom-Classes-Swift"
+  s.name         = "My-Custom-Classes"
   s.version      = "0.0.1"
   s.summary      = "My library"
   s.homepage     = "https://github.com/Nibelungc/My-Custom-Classes"
