@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.author             = { "Nikolai Kagala" => "nibelungc@gmail.com" }
   s.platform     = :ios, "8.0"
   s.source       = { :git => "https://github.com/Nibelungc/My-Custom-Classes.git", :tag => s.version.to_s }
-  s.source_files  = "My-Custom-Classes/Swift/**/*.{swift}"
+  s.source_files  = "My-Custom-Classes/Swift/*.{swift}"
   s.requires_arc = true
 
 end
