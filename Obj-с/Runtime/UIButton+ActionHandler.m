@@ -15,8 +15,6 @@ static char action_handler_hash_key;
 
 - (void)setActionHandler:(ActionHandler)actionHandler {
     objc_setAssociatedObject(self, &action_handler_hash_key, actionHandler, OBJC_ASSOCIATION_COPY);
-    
-    [self removeTarget: self action: @selector(customAction:) forControlEvents: UIControlEventTouchUpInside];
     [self addTarget:self action: @selector(customAction:) forControlEvents: UIControlEventTouchUpInside];
 }
 
