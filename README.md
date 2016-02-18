@@ -47,3 +47,18 @@ self.presentViewController(helpController, animated: true, completion: nil)
 ### Usage
 
 Add 'UIViewController+EmptyBackButton.h` and `UIViewController+EmptyBackButton.m` to your project
+
+## UIButton+ActionHandler
+
+Example of a category for the UIButton to handle action via block
+
+### Usage
+
+import "UIButton+ActionHandler.h"
+``` obj-c
+    UIButton* button = create and customize button...;
+    
+    [button setActionHandler: ^(UIButton* sender){
+        NSLog(@"Button tapped with title [%@]", sender.titleLabel.text);
+    }];
+```
